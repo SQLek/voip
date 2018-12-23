@@ -27,6 +27,7 @@ func Collect(reader Reader, spec []ByteRange) (string, error) {
 	var d []byte
 	var err error
 
+	charLoop:
 	for {
 
 		d, err = reader.Peek(i+1)
@@ -38,7 +39,7 @@ func Collect(reader Reader, spec []ByteRange) (string, error) {
 		for _, br := range spec {
 			if b >= br.From && b <= br.To {
 				i++
-				continue
+				continue charLoop
 			}
 		}
 
@@ -49,4 +50,18 @@ func Collect(reader Reader, spec []ByteRange) (string, error) {
 	s := string(d[:i])
 	_, err = reader.Discard(i)
 	return s,err
+}
+
+func Keyword(reader Reader, keyword string) (bool, error) {
+
+	d, err := reader.Peek(len(keyword))
+	if err != nil {
+		return false, err
+	}
+
+	if string(d) == keyword {
+		_, err = reader.Discard(len(keyword))
+		return true, err
+	}
+	return false, nil
 }
