@@ -27,3 +27,53 @@ func checkToken(reader ll.Reader) (bool, error) {
 func collectToken(reader ll.Reader) (string, error) {
 	return ll.Collect(reader, rangesToken)
 }
+
+//============================================================================
+// lexing text
+// text =                byte-string
+//                       ;default is to interpret this as UTF8 text.
+//                       ;ISO 8859-1 requires "a=charset:ISO-8859-1"
+//                       ;session-level attribute to be used
+//
+// byte-string =         1*(%x01-09/%x0B-0C/%x0E-FF)
+//                       ;any byte except NUL, CR, or LF
+
+var rangesText = []ll.ByteRange {
+	{0x01, 0x09},
+	{0x0B, 0x0C},
+	{0x0E, 0xFF},
+}
+
+func collectText(reader ll.Reader) (string, error) {
+	return ll.Collect(reader,rangesText)
+}
+
+//============================================================================
+// lexing non-ws
+// non-ws-string = 1*(VCHAR/%x80-FF)
+//                 ;string of visible characters
+// from RFC4234
+// VCHAR         = %x21-7E
+//                 ; visible (printing) characters
+
+var rangesNonWS = []ll.ByteRange {
+	{0x21, 0xFF},
+}
+
+func collectNonWS(reader ll.Reader) (string, error) {
+	return ll.Collect(reader,rangesNonWS)
+}
+
+//============================================================================
+// lexing digit
+// from RFC4234
+// DIGIT        =  %x30-39
+//              ; 0-9
+
+var rangesDigit = []ll.ByteRange {
+	{0x30, 0x39},
+}
+
+func collectDigit(reader ll.Reader) (string, error) {
+	return ll.Collect(reader,rangesDigit)
+}
